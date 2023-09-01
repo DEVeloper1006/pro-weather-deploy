@@ -870,7 +870,7 @@ main {
 .current-info{
   display: flex;
   flex-wrap: wrap;
-  align-items: start;
+  align-items: flex-start;
   justify-content: space-evenly;
   gap: 1.5rem;
   width: 100%;
