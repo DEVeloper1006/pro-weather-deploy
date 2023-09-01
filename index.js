@@ -28,7 +28,7 @@ const visibilityToggle = document.getElementById('visibility-switch');
 const futureSwitch = document.getElementById('future-temp-switch');
 
 async function loadCountries() {
-    return fetch('/public/countries.json')
+    return fetch('countries.json')
         .then(response => response.json())
         .catch(error => {
             console.error(`${error}: Unable to load JSON file.`);
@@ -189,8 +189,8 @@ function updateLon(lon) {
 function updateTemperature (tempObject) {
     let kelvinTemp = tempObject.temp;
     let kelvinFeelsLikeTemp = tempObject.feels_like;
-    temp.innerHTML = kelvinToCelsius(kelvinTemp) + "°C";
-    feelsLikeTemp.innerHTML = "Feels Like " + kelvinToCelsius(kelvinFeelsLikeTemp) + "°C";
+    temp.innerHTML = Math.round(kelvinToCelsius(kelvinTemp)) + "°C";
+    feelsLikeTemp.innerHTML = "Feels Like " + Math.round(kelvinToCelsius(kelvinFeelsLikeTemp)) + "°C";
 }
 
 function updateDescription (description) {
@@ -199,7 +199,7 @@ function updateDescription (description) {
 
 function updateWeatherIcon(weatherObject) {
     let description = weatherObject.description;
-    weatherIcon.src = `/public/openweathermap/${weatherObject.icon}.svg`;
+    weatherIcon.src = `openweathermap/${weatherObject.icon}.svg`;
     const parts = description.split(' ');
     let newDescription = "";
     for (let part of parts) {
@@ -209,7 +209,7 @@ function updateWeatherIcon(weatherObject) {
 }
 
 function kelvinToCelsius (kelvin) {
-    return (Math.round(kelvin - 273.15));
+    return (kelvin - 273.15);
 }
 
 function celsiusToFahrenheit (celsius) {
@@ -364,21 +364,32 @@ visibilityToggle.addEventListener('change', () => {
 });
 
 function fetchForecastData(weatherData, key) {
-    const futureUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&appid=${key}`;
-    fetch(futureUrl)
+    const geoAPI = "582630bfc17d473398bba6fd8dce0dc8";
+    const lat = weatherData.coord.lat;
+    const lon = weatherData.coord.lon;
+    // Fetch the timezone information
+    fetch(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&format=json&apiKey=${geoAPI}`)
         .then(response => response.json())
-        .then(data => {
-            futureSwitch.checked = false;
-            updateForecastData(data);
+        .then(result => {
+            const timeZoneName = result.results[0].timezone.name;
+            const futureUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&appid=${key}&timezone=${timeZoneName}`;
+            fetch(futureUrl)
+                .then(response => response.json())
+                .then(data => {
+                    futureSwitch.checked = false;
+                    updateForecastData(data);
+                })
+                .catch(error => {
+                    console.error("Error fetching forecast data:", error);
+                });
         })
         .catch(error => {
-            console.error("Error fetching forecast data:", error);
+            console.error("Error:", error);
         });
 };
 
 function updateForecastData(data) {
     const maxMinTemps = getMaxMinForecastTemps(data);
-
     updateDayNames(maxMinTemps);
     updateDailyWeather(maxMinTemps);
     updateWeatherForecast(data);
@@ -404,15 +415,16 @@ function getMaxMinForecastTemps (data) {
     data.list.forEach(item => {
         const date = new Date(item.dt * 1000);
         const day = date.toISOString().split('T')[0];
-        const temperature = kelvinToCelsius(item.main.temp_max);
+        const highestTemperature = kelvinToCelsius(item.main.temp_max);
+        const lowestTemperature = kelvinToCelsius(item.main.temp_min);
         if (!dailyTemps[day]) {
-            dailyTemps[day] = { max: temperature, min: temperature };
+            dailyTemps[day] = { max: highestTemperature, min: lowestTemperature };
         } else {
-            if (temperature > kelvinToCelsius(dailyTemps[day].max)) {
-                dailyTemps[day].max = temperature;
+            if (highestTemperature >= kelvinToCelsius(dailyTemps[day].max)) {
+                dailyTemps[day].max = highestTemperature;
             }
-            if (temperature < kelvinToCelsius(dailyTemps[day].min)) {
-                dailyTemps[day].min = temperature;
+            if (lowestTemperature <= kelvinToCelsius(dailyTemps[day].min)) {
+                dailyTemps[day].min = lowestTemperature;
             }
         }
     });
@@ -423,8 +435,8 @@ function updateDailyWeather(maxMin) {
     let counter = 1;
     for (let day in maxMin) {
         if (counter <= 5) { // Limit the loop to the available IDs
-            document.getElementById(`top-temp-${counter}`).innerHTML = maxMin[day].max + "°C";
-            document.getElementById(`bottom-temp-${counter}`).innerHTML = maxMin[day].min + "°C";
+            document.getElementById(`top-temp-${counter}`).innerHTML = Math.round(maxMin[day].max) + "°C";
+            document.getElementById(`bottom-temp-${counter}`).innerHTML = Math.round(maxMin[day].min) + "°C";
             counter++;
         } else {
             break; // Exit the loop when there are no more available IDs
@@ -457,7 +469,7 @@ function updateWeatherForecast(data) {
         if (count <= 5) {
             const mostCommonInfo = findMostCommonInfo(forecastByDay[day].weatherInfo);
             if (mostCommonInfo) {
-                document.getElementById(`future-img-${count}`).src = `/public/openweathermap/${mostCommonInfo.code}.svg`;
+                document.getElementById(`future-img-${count}`).src = `openweathermap/${mostCommonInfo.code}.svg`;
                 document.getElementById(`future-descr-${count++}`).innerHTML = capitalizeEachWord(mostCommonInfo.description);
             }
         } else {
