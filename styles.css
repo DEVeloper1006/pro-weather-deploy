@@ -871,7 +871,7 @@ main {
   display: flex;
   flex-wrap: wrap;
   align-items: start;
-  justify-content: center;
+  justify-content: space-evenly;
   gap: 1.5rem;
   width: 100%;
 }
