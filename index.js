@@ -398,25 +398,33 @@ function updateDayNames(obj) {
     }
 }
 
-function getMaxMinForecastTemps (data) {
+function getMaxMinForecastTemps(data) {
     const dailyTemps = {};
+    const currentDate = new Date();
+    const tomorrow = new Date(currentDate);
+    tomorrow.setDate(currentDate.getDate() + 1); // Get the date for tomorrow
+
     data.list.forEach((item) => {
         const date = new Date(item.dt * 1000);
-        const day = date.toISOString().split('T')[0];
-        const highestTemperature = kelvinToCelsius(item.main.temp_max);
-        const lowestTemperature = kelvinToCelsius(item.main.temp_min);
+        // Check if the date is after the current day (including tomorrow)
+        if (date >= tomorrow) {
+            const day = date.toISOString().split('T')[0];
+            const highestTemperature = kelvinToCelsius(item.main.temp_max);
+            const lowestTemperature = kelvinToCelsius(item.main.temp_min);
 
-        if (!dailyTemps[day]) {
-            dailyTemps[day] = { max: highestTemperature, min: lowestTemperature };
-        } else {
-            if (highestTemperature >= kelvinToCelsius(dailyTemps[day].max)) {
-                dailyTemps[day].max = highestTemperature;
-            }
-            if (lowestTemperature <= kelvinToCelsius(dailyTemps[day].min)) {
-                dailyTemps[day].min = lowestTemperature;
+            if (!dailyTemps[day]) {
+                dailyTemps[day] = { max: highestTemperature, min: lowestTemperature, day: day };
+            } else {
+                if (highestTemperature >= dailyTemps[day].max) {
+                    dailyTemps[day].max = highestTemperature;
+                }
+                if (lowestTemperature <= dailyTemps[day].min) {
+                    dailyTemps[day].min = lowestTemperature;
+                }
             }
         }
     });
+
     return dailyTemps;
 }
 
