@@ -1,5 +1,3 @@
-import {DateTime} from './node_modules/luxon/src/luxon.js';
-
 //All Glocal Elements
 const cityInput = document.getElementById('city');
 const cityName = document.getElementById('cityName');
@@ -226,12 +224,26 @@ function calcSunriseSunset(data) {
         .then(response => response.json())
         .then(result => {
             const timeZoneName = result.results[0].timezone.name;
-            const sunriseDate = DateTime.fromSeconds(data.sys.sunrise, {zone:timeZoneName});
-            const sunsetDate = DateTime.fromSeconds(data.sys.sunset, {zone:timeZoneName});
-            sunriseTime.innerHTML = sunriseDate.toFormat("h:mm a");
-            sunsetTime.innerHTML = sunsetDate.toFormat("h:mm a");
+            const sunriseDate = new Date(data.sys.sunrise * 1000);
+            const sunsetDate = new Date(data.sys.sunset * 1000);
+            
+            // Format sunrise and sunset times
+            const sunriseTimeString = formatTime(sunriseDate, timeZoneName);
+            const sunsetTimeString = formatTime(sunsetDate, timeZoneName);
+            
+            sunriseTime.innerHTML = sunriseTimeString;
+            sunsetTime.innerHTML = sunsetTimeString;
         })
         .catch(error => console.log('error', error));
+}
+
+function formatTime(date, timeZone) {
+    return new Intl.DateTimeFormat('en-US', {
+        hour: 'numeric',
+        minute: 'numeric',
+        hour12: true,
+        timeZone: timeZone
+    }).format(date);
 }
 
 function convertMStoKMH (ms) {
