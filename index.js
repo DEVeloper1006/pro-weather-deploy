@@ -364,27 +364,15 @@ visibilityToggle.addEventListener('change', () => {
 });
 
 function fetchForecastData(weatherData, key) {
-    const geoAPI = "582630bfc17d473398bba6fd8dce0dc8";
-    const lat = weatherData.coord.lat;
-    const lon = weatherData.coord.lon;
-    // Fetch the timezone information
-    fetch(`https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&format=json&apiKey=${geoAPI}`)
+    const futureUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&appid=${key}`;
+    fetch(futureUrl)
         .then(response => response.json())
-        .then(result => {
-            const timeZoneName = result.results[0].timezone.name;
-            const futureUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${weatherData.coord.lat}&lon=${weatherData.coord.lon}&appid=${key}&timezone=${timeZoneName}`;
-            fetch(futureUrl)
-                .then(response => response.json())
-                .then(data => {
-                    futureSwitch.checked = false;
-                    updateForecastData(data);
-                })
-                .catch(error => {
-                    console.error("Error fetching forecast data:", error);
-                });
+        .then(data => {
+            futureSwitch.checked = false;
+            updateForecastData(data);
         })
         .catch(error => {
-            console.error("Error:", error);
+            console.error("Error fetching forecast data:", error);
         });
 };
 
@@ -412,11 +400,12 @@ function updateDayNames(obj) {
 
 function getMaxMinForecastTemps (data) {
     const dailyTemps = {};
-    data.list.forEach(item => {
+    data.list.forEach((item) => {
         const date = new Date(item.dt * 1000);
         const day = date.toISOString().split('T')[0];
         const highestTemperature = kelvinToCelsius(item.main.temp_max);
         const lowestTemperature = kelvinToCelsius(item.main.temp_min);
+
         if (!dailyTemps[day]) {
             dailyTemps[day] = { max: highestTemperature, min: lowestTemperature };
         } else {
