@@ -870,8 +870,8 @@ main {
 .current-info{
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-evenly;
+  align-items: start;
+  justify-content: center;
   gap: 1.5rem;
   width: 100%;
 }
