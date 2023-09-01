@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=1.0, initial-scale=1.0">
+        <title>ProWeather</title>
+        <meta name="Title" content="ProWeather">
+        <meta name="Author" content="Dev Mody">
+        <meta name="Description" content="This is a website that actively checks weather from all around the world and provides information to users regarding a certain location's temperature, feels-like temperature, humidity, and more.">
+        <link rel="stylesheet" href="styles.css">
+        <link rel="icon" href="img/weather-logo.png" type="image/x-icon">
+    </head>
+    <body class="font-body bg-stone-950">
+        <div class="top-container">
+            <div class="top-menu">
+                <a class="logo" href="index.html">
+                    <h1 class="p-4 text-slate-50 leading-1">ProWeather</h1>
+                </a>  
+
+                <div class="search">
+                    <input type="text" name="city" placeholder="Enter City" id="city">
+                    <svg id="searchIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                    </svg>  
+                </div>                    
+                    
+                <div class="location" id="location" title="Use Current Location">
+                    <lord-icon
+                        src="https://cdn.lordicon.com/zzcjjxew.json"
+                        trigger="click"
+                        colors="primary:#ffffff,secondary:#e83a30"
+                        stroke="75"
+                        style="width:50px;height:50px">
+                    </lord-icon>
+                </div> 
+            </div>
+        </div>
+
+        <main>
+            <h1 class="text-5xl text-slate-100 select-none" id="cityName">Please Search a City</h1>
+            <div class="current-info hide">
+                <div class="container">
+                    <div class="current-weather select-none text-center">
+                        <h2 class="current-title">Current Weather</h2>
+                        <div class="info-wrap">
+                            <div class="weather">
+                                <img src="openweathermap/01n.svg" alt="Partly Cloudy" title="Partly Cloudy" class="weather-img">
+                                <h2 class="weather-type"></h2>
+                            </div>
+                            <div class="temperature">
+                                <h1 class="temp z-10">10°C</h1>
+                                <h5 class="feels-like" id="feels-like">Feels Like 10°C</h5>
+                            </div> 
+                        </div>
+                        <div class="toggle-switch">
+                            <h2>°C</h2>
+                            <input type="checkbox" id="temp-switch" class="toggle">
+                            <h2>°F</h2>
+                        </div> 
+                    </div>
+
+                    <div class="other-details">
+                        <h1>More Details</h1>
+                        <div class="details-grid">
+                            <div class="more-info">
+                                <div class="humidity">
+                                    <h1>Humidity</h1>
+                                    <h4 id="humidity">60%</h1>
+                                </div>
+                                <div class="pressure">
+                                    <h1>Pressure</h1>
+                                    <h4 id="pressure">1000 hPa</h4>
+                                </div>
+                                <div class="visibility">
+                                    <h1>Visibility</h1>
+                                    <h4 id="visibility">500 km</h4>
+                                </div>
+                                <div class="toggleButtons">
+                                    <div class="speedToggle">
+                                        <h2>hPa</h2>
+                                        <input type="checkbox" class="toggle" id="pressure-switch">
+                                        <h2>mmHg</h2>
+                                    </div>
+                                    <div class="speedToggle">
+                                        <h2>km</h2>
+                                        <input type="checkbox" class="toggle" id="visibility-switch">
+                                        <h2>miles</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ss-wrap">
+                                <div class="rise-set">
+                                    <h1>Sunrise</h1>
+                                    <h3 id="sunrise">8:00 PM</h2>
+                                </div>
+                                <div class="rise-set">
+                                    <h1>Sunset</h1>
+                                    <h3 id="sunset">8:00 AM</h2>
+                                </div>
+                            </div>
+                            <div class="wind-info">
+                                <div class="speed">
+                                    <h1>Wind Speed</h1>
+                                    <h4 id="wind-speed">15 km/h</h4>
+                                </div>
+                                <div class="direction">
+                                    <h1>Wind Direction</h1>
+                                    <h4 id="wind-direction">135°</h4>
+                                </div>
+                                <div class="toggleButtons">
+                                    <div class="speedToggle">
+                                        <h2>km/h</h2>
+                                        <input type="checkbox" id="speed-switch" class="toggle">
+                                        <h2>mph</h2>
+                                    </div>
+                                    <div class="directionToggle">
+                                        <h2>Degrees</h2>
+                                        <input type="checkbox" id="direction-switch" class="toggle">
+                                        <h2>Bearing</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="loc-info">
+                                <div class="lat-lon">
+                                    <h1>Latitude</h1>
+                                    <h4 id="lat">90°</h4>
+                                </div>
+                                <div class="lat-lon">
+                                    <h1>Longitude</h1>
+                                    <h4 id="lon">90°</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="future-weather">
+                    <h1>Future Weather</h1>
+                    <div class="future-card">
+                        <div class="future-info">
+                            <h2 id="future-day-1">Wednesday</h2>
+                            <div class="future-weather-type">
+                                <img src="openweathermap/04d.svg" alt="Cloudy" title="Cloudy" class="future-weather-img" id="future-img-1">
+                                <h3 id="future-descr-1">Cloudy</h3>
+                            </div>
+                            <div class="future-temperature">
+                                <h3 class="maxTemp" id="top-temp-1">47°C</h3>
+                                <h4 class="text-xl">/</h4>
+                                <h3 class="minTemp" id="bottom-temp-1">24°C</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="future-card">
+                        <div class="future-info">
+                            <h2 id="future-day-2">Thursday</h2>
+                            <div class="future-weather-type">
+                                <img src="openweathermap/04d.svg" alt="Cloudy" title="Cloudy" class="future-weather-img" id="future-img-2">
+                                <h3 id="future-descr-2">Cloudy</h3>
+                            </div>
+                            <div class="future-temperature">
+                                <h3 class="maxTemp" id="top-temp-2">47°C</h3>
+                                <h4 class="text-xl">/</h4>
+                                <h3 class="minTemp" id="bottom-temp-2">24°C</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="future-card">
+                        <div class="future-info">
+                            <h2 id="future-day-3">Friday</h2>
+                            <div class="future-weather-type">
+                                <img src="openweathermap/04d.svg" alt="Cloudy" title="Cloudy" class="future-weather-img" id="future-img-3">
+                                <h3 id="future-descr-3">Cloudy</h3>
+                            </div>
+                            <div class="future-temperature">
+                                <h3 class="maxTemp" id="top-temp-3">47°C</h3>
+                                <h4 class="text-xl">/</h4>
+                                <h3 class="minTemp" id="bottom-temp-3">24°C</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="future-card">
+                        <div class="future-info">
+                            <h2 id="future-day-4">Saturday</h2>
+                            <div class="future-weather-type">
+                                <img src="openweathermap/04d.svg" alt="Cloudy" title="Cloudy" class="future-weather-img" id="future-img-4">
+                                <h3 id="future-descr-4">Cloudy</h3>
+                            </div>
+                            <div class="future-temperature">
+                                <h3 class="maxTemp" id="top-temp-4">47°C</h3>
+                                <h4 class="text-xl">/</h4>
+                                <h3 class="minTemp" id="bottom-temp-4">24°C</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="future-card">
+                        <div class="future-info">
+                            <h2 id="future-day-5">Sunday</h2>
+                            <div class="future-weather-type">
+                                <img src="openweathermap/04d.svg" alt="Cloudy" title="Cloudy" class="future-weather-img" id="future-img-5">
+                                <h3 id="future-descr-5">Cloudy</h3>
+                            </div>
+                            <div class="future-temperature">
+                                <h3 class="maxTemp" id="top-temp-5">47°C</h3>
+                                <h4 class="text-xl">/</h4>
+                                <h3 class="minTemp" id="bottom-temp-5">24°C</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="future-toggles">
+                        <h1>°C</h1>
+                        <input type="checkbox" id="future-temp-switch" class="toggle"">
+                        <h1>°F</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="search-something">
+                <img src="openweathermap/undraw_weather_re_qsmd.svg" alt="Please Search Something" title="Please Search a City">
+            </div>
+        </main>
+
+        <script type="module" src="index.js" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.1/build/global/luxon.min.js"></script>
+        <script src="https://cdn.lordicon.com/bhenfmcm.js"></script>
+    </body>
+</html>
